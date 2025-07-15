@@ -1,33 +1,33 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Palavra de ativação personalizada
-local comando = "helpgeison"
+-- Escuta todos os jogadores
+for _, player in ipairs(Players:GetPlayers()) do
+    player.Chatted:Connect(function(msg)
+        if msg:lower() == "helpgeison" then
+            local targetChar = player.Character
+            if targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local hrp = myChar:WaitForChild("HumanoidRootPart")
 
--- Função para teleportar até o player que chamou
-local function TeleportarAte(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(2, 0, 2)
-        print("Teleportado até "..player.Name)
-    end
+                -- Teleporta você até o jogador que escreveu "helpgeison"
+                hrp.CFrame = targetChar.HumanoidRootPart.CFrame + Vector3.new(2, 0, 2)
+            end
+        end
+    end)
 end
 
--- Monitorar jogadores que entrarem no jogo
+-- Detecta novos jogadores entrando depois
 Players.PlayerAdded:Connect(function(player)
     player.Chatted:Connect(function(msg)
-        if string.lower(msg) == comando then
-            TeleportarAte(player)
+        if msg:lower() == "helpgeison" then
+            local targetChar = player.Character or player.CharacterAdded:Wait()
+            local hrpTarget = targetChar:WaitForChild("HumanoidRootPart")
+
+            local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            local hrp = myChar:WaitForChild("HumanoidRootPart")
+
+            hrp.CFrame = hrpTarget.CFrame + Vector3.new(2, 0, 2)
         end
     end)
 end)
-
--- Monitorar jogadores que já estão no servidor
-for _, player in pairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        player.Chatted:Connect(function(msg)
-            if string.lower(msg) == comando then
-                TeleportarAte(player)
-            end
-        end)
-    end
-end
